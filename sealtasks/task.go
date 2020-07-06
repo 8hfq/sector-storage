@@ -14,9 +14,11 @@ const (
 	TTFetch        TaskType = "seal/v0/fetch"
 	TTUnseal       TaskType = "seal/v0/unseal"
 	TTReadUnsealed TaskType = "seal/v0/unsealread"
+	TTPledgeSector TaskType = "seal/v0/pledgesector"
 )
 
 var order = map[TaskType]int{
+	TTPledgeSector: 8,
 	TTAddPiece:     7,
 	TTPreCommit1:   6,
 	TTPreCommit2:   5,

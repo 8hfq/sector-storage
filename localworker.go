@@ -87,6 +87,22 @@ func (l *LocalWorker) sb() (ffiwrapper.Storage, error) {
 	return ffiwrapper.New(&localWorkerPathProvider{w: l}, l.scfg)
 }
 
+func (l *LocalWorker) PledgeSectors(ctx context.Context, sector abi.SectorID, epcs []abi.UnpaddedPieceSize, sz []abi.UnpaddedPieceSize) ([]abi.PieceInfo, error) {
+	if len(sz) == 0 {
+		return nil, nil
+	}
+	log.Infof("Pledge %d,countains %+v", sector, epcs)
+	out := make([]abi.PieceInfo, len(sz))
+	for i, s := range sz {
+		ppi, err := l.AddPiece(ctx, sector, epcs, s, l.PledgeSectors(s))
+		if err != nil {
+			return nil, xerrors.Errorf("add piece: %w", err)
+		}
+		epcs = append(epcs, s)
+		out[i] = ppi
+	}
+	return out, nil
+}
 func (l *LocalWorker) NewSector(ctx context.Context, sector abi.SectorID) error {
 	sb, err := l.sb()
 	if err != nil {
